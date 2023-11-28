@@ -71,8 +71,8 @@ def generate_launch_description():
             '-entity', LaunchConfiguration('robot_name'),
             '-topic', 'robot_description',
             '-timeout', '20.0',
-            '-x', '0.0',
-            '-y', '0.0',
+            '-x', '0.4',
+            '-y', '0.4',
             '-package_to_model'
         ],
         prefix="bash -c 'sleep 2.0; $0 $@' ",
