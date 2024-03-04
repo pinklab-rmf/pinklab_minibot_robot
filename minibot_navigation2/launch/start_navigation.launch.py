@@ -26,6 +26,8 @@ from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
 from launch.conditions import IfCondition
 import launch.logging
+from launch.substitutions import TextSubstitution
+from launch.substitutions import PythonExpression
 
 def generate_launch_description():
     ld = LaunchDescription()
@@ -34,12 +36,19 @@ def generate_launch_description():
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
         default_value='',
-        description='Top-level namespace')
+        description='Top-level namespace'
+    )
 
-    
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     declare_use_sim_time = DeclareLaunchArgument(
         name='use_sim_time', default_value=use_sim_time, description='Use simulator time'
+    )
+    
+    yaml_filename = LaunchConfiguration('yaml_filename', default=os.path.join(get_package_share_directory('minibot_navigation2'), 'maps', 'simple_building.yaml'))
+    declare_yaml_cmd = DeclareLaunchArgument(
+        'yaml_filename',
+        default_value=yaml_filename,
+        description='Full path to the map file to load'
     )
 
     bringup_dir = get_package_share_directory('minibot_navigation2')
@@ -54,6 +63,7 @@ def generate_launch_description():
     
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time)
+    ld.add_action(declare_yaml_cmd)
     ld.add_action(declare_params_file_cmd)
  
     remappings = [('/tf', 'tf'),
@@ -63,8 +73,7 @@ def generate_launch_description():
         executable='map_server',
         name='map_server',
         output='screen',
-        parameters=[{'yaml_filename': os.path.join(get_package_share_directory('minibot_navigation2'), 'maps', 'simple_building.yaml'),
-                     },],
+        parameters=[{'yaml_filename': yaml_filename}],
         remappings=remappings)
 
     map_server_lifecyle=Node(package='nav2_lifecycle_manager',
@@ -104,6 +113,5 @@ def generate_launch_description():
 
     ld.add_action(bringup_cmd)
 
-
-
     return ld
+

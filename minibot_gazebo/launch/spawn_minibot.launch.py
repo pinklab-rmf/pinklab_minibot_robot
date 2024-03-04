@@ -13,8 +13,8 @@ from ament_index_python.packages import get_package_share_directory
 from pathlib import Path
 
 def generate_launch_description():
-    robot_name = DeclareLaunchArgument("robot_name", default_value="minibot")
-    robot_prefix = DeclareLaunchArgument("robot_prefix", default_value="minibot")
+    robot_name = DeclareLaunchArgument("robot_name", default_value="minibot_1")
+    robot_prefix = DeclareLaunchArgument("robot_prefix", default_value="")
     
     upload_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([

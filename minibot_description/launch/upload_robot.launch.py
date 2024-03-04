@@ -15,15 +15,8 @@ def generate_launch_description():
     is_sim = DeclareLaunchArgument("is_sim", default_value="false")
     prefix = DeclareLaunchArgument("prefix", default_value="")
     
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    xacro_path = LaunchConfiguration('xacro_path', default=PathJoinSubstitution([
-        FindPackageShare('minibot_description'),
-        'urdf',
-        'robot.urdf.xacro',
-    ]))
-    
     frame_prefix = PythonExpression([
-        '"', LaunchConfiguration('prefix'), '"',
+        '"', LaunchConfiguration('prefix'), '"'
     ])
     
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
@@ -35,21 +28,6 @@ def generate_launch_description():
         namespace=LaunchConfiguration('prefix'),
         output='screen',
         parameters=[{
-            'robot_description':
-            Command(['xacro', ' ', xacro_path]),
-            'use_sim_time': use_sim_time,
-        }],
-        remappings=remappings
-    )
-
-    rsp_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        namespace=LaunchConfiguration('prefix'),
-        output='screen',
-        parameters=[{
-            frame_prefix: frame_prefix,
             'robot_description':
                 Command([
                     'xacro ',
