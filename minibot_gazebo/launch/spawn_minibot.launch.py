@@ -16,10 +16,6 @@ def generate_launch_description():
     robot_name = DeclareLaunchArgument("robot_name", default_value="minibot")
     robot_prefix = DeclareLaunchArgument("robot_prefix", default_value="minibot")
     
-    world_name = DeclareLaunchArgument(
-        "world_name", default_value="empty.world")
-    
-
     upload_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             FindPackageShare('minibot_description'),
@@ -47,7 +43,7 @@ def generate_launch_description():
             '-Y', LaunchConfiguration('yaw', default='0.0'),
             '-package_to_model'
         ],
-        prefix="bash -c 'sleep 3.0; $0 $@' ",
+        prefix="bash -c 'sleep 0.0; $0 $@' ",
         parameters=[{
             "use_sim_time": True,
             "namespace": LaunchConfiguration('robot_prefix')
@@ -86,7 +82,6 @@ def generate_launch_description():
         ),
         robot_name,
         robot_prefix,
-        world_name,
         upload_robot,
         spawn_robot,
     
