@@ -3,21 +3,21 @@
     <xacro:macro name="insert_robot" params="prefix">
 
         <xacro:property name="wheel_diameter" value="0.068"/>
-        <xacro:property name="wheel_seperation" value="0.180"/>
+        <xacro:property name="wheel_speration" value="0.180"/>
 
-        <link name="base_footprint"/>
+        <link name="${prefix}base_footprint"/>
 
-        <link name="base_link">
+        <link name="${prefix}base_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/visual/base_link.dae" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/visual/base_link.dae" scale="1 1 1"/>
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/collision/base_link.stl" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/collision/base_link.stl" scale="1 1 1"/>
                 </geometry>
             </collision>
             <inertial>
@@ -28,24 +28,24 @@
             </inertial>
         </link>
 
-        <joint name="base_link_fixed_joint" type="fixed">
-            <parent link="base_footprint"/>
-            <child link="base_link"/>
+        <joint name="${prefix}base_link_fixed_joint" type="fixed">
+            <parent link="${prefix}base_footprint"/>
+            <child link="${prefix}base_link"/>
             <origin xyz="0 0 ${wheel_diameter/2}" rpy="0 0 0"/>
         </joint>
 
         <xacro:macro name="insert_wheel" params="parent prefix prefix_dir dir">
-            <link name="${prefix_dir}_wheel">
+            <link name="${prefix}${prefix_dir}_wheel">
                 <visual>
                     <origin xyz="0 0 0" rpy="0 0 ${dir * pi/2}"/>
                     <geometry>
-                        <mesh filename="file://$(find minibot_description)/meshes/visual/wheel.dae" scale="1 1 1"/>
+                        <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/visual/wheel.dae" scale="1 1 1"/>
                     </geometry>
                 </visual>
                 <collision>
                     <origin xyz="0 0 0" rpy="0 0 ${dir * pi/2}"/>
                     <geometry>
-                        <mesh filename="file://$(find minibot_description)/meshes/collision/wheel.stl" scale="1 1 1"/>
+                        <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/collision/wheel.stl" scale="1 1 1"/>
                     </geometry>
                 </collision>
                 <inertial>
@@ -57,28 +57,28 @@
                 </inertial>
             </link>
 
-            <joint name="${prefix_dir}_wheel_joint" type="continuous">
+            <joint name="${prefix}${prefix_dir}_wheel_joint" type="continuous">
                 <parent link="${parent}"/>
-                <child link="${prefix_dir}_wheel"/>
+                <child link="${prefix}${prefix_dir}_wheel"/>
                 <axis xyz="0 1 0"/>
-                <origin xyz="0 ${dir * wheel_seperation/2} 0" rpy="0 0 0"/>
+                <origin xyz="0 ${dir * wheel_speration/2} 0" rpy="0 0 0"/>
             </joint>
         </xacro:macro>
 
-        <xacro:insert_wheel parent="base_link" prefix="" prefix_dir="l" dir="1" />
-        <xacro:insert_wheel parent="base_link" prefix="" prefix_dir="r" dir="-1" />
+        <xacro:insert_wheel parent="${prefix}base_link" prefix="${prefix}" prefix_dir="l" dir="1" />
+        <xacro:insert_wheel parent="${prefix}base_link" prefix="${prefix}" prefix_dir="r" dir="-1" />
 
-        <link name="front_camera_mount">
+        <link name="${prefix}front_camera_mount">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/visual/front_camera.dae" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/visual/front_camera.dae" scale="1 1 1"/>
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/collision/front_camera.stl" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/collision/front_camera.stl" scale="1 1 1"/>
                 </geometry>
             </collision>
             <inertial>
@@ -88,31 +88,31 @@
             </inertial>
         </link>
 
-        <joint name="front_camera_mount_fixed_joint" type="fixed">
-            <parent link="base_link"/>
-            <child link="front_camera_mount"/>
+        <joint name="${prefix}front_camera_mount_fixed_joint" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}front_camera_mount"/>
             <origin xyz="0.045 0 0.085" rpy="0 0 0"/>
         </joint>
 
-        <link name="camera_link"/>
+        <link name="${prefix}camera_link"/>
 
-        <joint name="camera_link_fixed_joint" type="fixed">
-            <parent link="front_camera_mount"/>
-            <child link="camera_link"/>
+        <joint name="${prefix}camera_link_fixed_joint" type="fixed">
+            <parent link="${prefix}front_camera_mount"/>
+            <child link="${prefix}camera_link"/>
             <origin xyz="0.0111 0 0.0193" rpy="0 ${pi/2} 0"/>
         </joint>
 
-        <link name="ul_sensor_mount">
+        <link name="${prefix}ul_sensor_mount">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/visual/ul_sensor.dae" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/visual/ul_sensor.dae" scale="1 1 1"/>
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <mesh filename="file://$(find minibot_description)/meshes/collision/ul_sensor.stl" scale="1 1 1"/>
+                    <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/collision/ul_sensor.stl" scale="1 1 1"/>
                 </geometry>
             </collision>
             <inertial>
@@ -122,17 +122,17 @@
             </inertial>
         </link>
 
-        <joint name="ul_sensor_mount_fixed_joint" type="fixed">
-            <parent link="base_link"/>
-            <child link="ul_sensor_mount"/>
+        <joint name="${prefix}ul_sensor_mount_fixed_joint" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}ul_sensor_mount"/>
             <origin xyz="0.03 0 0.01" rpy="0 0 0"/>
         </joint>
 
-        <link name="ul_sensor_link"/>
+        <link name="${prefix}ul_sensor_link"/>
 
-        <joint name="ul_sensor_link_fixed_joint" type="fixed">
-            <parent link="ul_sensor_mount"/>
-            <child link="ul_sensor_link"/>
+        <joint name="${prefix}ul_sensor_link_fixed_joint" type="fixed">
+            <parent link="${prefix}ul_sensor_mount"/>
+            <child link="${prefix}ul_sensor_link"/>
             <origin xyz="0.02 0 0" rpy="0 0 0"/>
         </joint>
 

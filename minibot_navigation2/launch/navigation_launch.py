@@ -16,14 +16,15 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 
-from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable
+from launch import LaunchDescription, LaunchContext
+from launch.actions import DeclareLaunchArgument, GroupAction, SetEnvironmentVariable, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import LoadComposableNodes
 from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode
 from nav2_common.launch import RewrittenYaml
+
 
 
 def generate_launch_description():
@@ -36,6 +37,7 @@ def generate_launch_description():
     params_file = LaunchConfiguration('params_file')
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
+    container_name_full = (namespace, '/', container_name)
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
 
@@ -55,7 +57,9 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static'),
-                  ('/cmd_vel', '/base_controller/cmd_vel_unstamped')]
+                  ('/scan', ['/', namespace, '/scan']),
+                  (['/', namespace, '/cmd_vel'],['/', namespace, '/base_controller/cmd_vel_unstamped']),
+                  ]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
@@ -193,7 +197,7 @@ def generate_launch_description():
 
     load_composable_nodes = LoadComposableNodes(
         condition=IfCondition(use_composition),
-        target_container=container_name,
+        target_container=container_name_full,
         composable_node_descriptions=[
             ComposableNode(
                 package='nav2_controller',

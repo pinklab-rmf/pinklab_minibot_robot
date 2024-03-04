@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="minibot">
-    <xacro:include filename="$(find minibot_description)/urdf/common/inertia_macro.urdf.xacro"/>
-    <xacro:include filename="$(find minibot_description)/urdf/minibot.urdf.xacro"/>
-    <xacro:include filename="$(find minibot_description)/urdf/minibot_gazebo.urdf.xacro"/>
-    <xacro:include filename="$(find minibot_description)/urdf/minibot_ros2_control.urdf.xacro"/>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="aidl200">
+    <xacro:include filename="$(find rmf_pinklab_assets)/urdf/common/inertia_macro.urdf.xacro"/>
+    <xacro:include filename="$(find rmf_pinklab_assets)/urdf/minibot/minibot.urdf.xacro"/>
+    <xacro:include filename="$(find rmf_pinklab_assets)/urdf/minibot/minibot_gazebo.urdf.xacro"/>
+    <xacro:include filename="$(find rmf_pinklab_assets)/urdf/minibot/minibot_ros2_control.urdf.xacro"/>
 
     <xacro:arg name="prefix" default=""/>
     <xacro:arg name="is_sim" default="false"/>
@@ -20,17 +20,17 @@
     </xacro:if>
 
     <!-- insert ydlidar_x2 lidar -->
-    <link name="ydlidar_lidar_mount">
+    <link name="${prefix}/ydlidar_lidar_mount">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="file://$(find minibot_description)/meshes/visual/ydlidar_x2_assy.dae" scale="1 1 1"/>
+                <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/visual/ydlidar_x2_assy.dae" scale="1 1 1"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="file://$(find minibot_description)/meshes/collision/ydlidar_x2_assy.stl" scale="1 1 1"/>
+                <mesh filename="file://$(find rmf_pinklab_assets)/meshes/minibot/collision/ydlidar_x2_assy.stl" scale="1 1 1"/>
             </geometry>
         </collision>
         <inertial>
@@ -40,17 +40,17 @@
         </inertial>
     </link>
 
-    <joint name="ydidar_mount_fixed_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="ydlidar_lidar_mount"/>
+    <joint name="${prefix}/idar_mount_fixed_joint" type="fixed">
+        <parent link="${prefix}/base_link"/>
+        <child link="${prefix}/ydlidar_lidar_mount"/>
         <origin xyz="-0.01 0 0.085" rpy="0 0 0"/>
     </joint>
 
-    <link name="laser_link"/>
+    <link name="${prefix}/laser_link"/>
 
-    <joint name="laser_link_fixed_joint" type="fixed">
-        <parent link="ydlidar_lidar_mount"/>
-        <child link="laser_link"/>
+    <joint name="${prefix}/laser_link_fixed_joint" type="fixed">
+        <parent link="${prefix}/ydlidar_lidar_mount"/>
+        <child link="${prefix}/laser_link"/>
         <origin xyz="0 0 0.04245" rpy="0 0 0"/>
     </joint>
 </robot>

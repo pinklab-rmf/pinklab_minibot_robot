@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="insert_ros2_control" params="prefix is_sim:=false robot_port_name robot_baudrate">
-        <ros2_control name="${prefix}/minibot_system" type="system">
+    <xacro:macro name="insert_ros2_control" params="prefix is_sim:=^|false robot_port_name robot_baudrate">
+        <ros2_control name="${prefix}minibot_system" type="system">
             <xacro:if value="$(arg is_sim)">
                 <hardware>
                     <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -15,7 +15,7 @@
                 </hardware>
             </xacro:unless>
 
-            <joint name="l_wheel_joint">
+            <joint name="${prefix}l_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1.0</param>
                     <param name="max">1.0</param>
@@ -25,7 +25,7 @@
                 <state_interface name="velocity"/>
             </joint>
 
-            <joint name="r_wheel_joint">
+            <joint name="${prefix}r_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1.0</param>
                     <param name="max">1.0</param>

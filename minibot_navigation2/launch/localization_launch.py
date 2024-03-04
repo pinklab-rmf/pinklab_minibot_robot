@@ -32,15 +32,17 @@ def generate_launch_description():
 
     namespace = LaunchConfiguration('namespace')
     map_yaml_file = LaunchConfiguration('map')
+    map_server = LaunchConfiguration('map_server')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
     params_file = LaunchConfiguration('params_file')
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
+    container_name_full = (namespace, '/', container_name)
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
 
-    lifecycle_nodes = ['map_server', 'amcl']
+    lifecycle_nodes = [ 'amcl']
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -49,7 +51,8 @@ def generate_launch_description():
     # TODO(orduno) Substitute with `PushNodeRemapping`
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
-                  ('/tf_static', 'tf_static')]
+                  ('/tf_static', 'tf_static'),
+                  ('/scan', 'scan')]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
@@ -74,6 +77,11 @@ def generate_launch_description():
         'map',
         description='Full path to map yaml file to load')
 
+    declare_map_server_cmd = DeclareLaunchArgument(
+            'map_server',
+            default_value='True',
+            description='Whether run a map server per nav2 stack')
+    
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
         default_value='false',
@@ -89,7 +97,7 @@ def generate_launch_description():
         description='Automatically startup the nav2 stack')
 
     declare_use_composition_cmd = DeclareLaunchArgument(
-        'use_composition', default_value='True',
+        'use_composition', default_value='False',
         description='Use composed bringup if True')
 
     declare_container_name_cmd = DeclareLaunchArgument(
@@ -108,6 +116,7 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(['not ', use_composition])),
         actions=[
             Node(
+               condition=IfCondition(map_server),
                 package='nav2_map_server',
                 executable='map_server',
                 name='map_server',
@@ -135,13 +144,23 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 parameters=[{'use_sim_time': use_sim_time},
                             {'autostart': autostart},
-                            {'node_names': lifecycle_nodes}])
+                            {'node_names': ['amcl']}]),
+             Node(
+                condition=IfCondition(map_server),
+                package='nav2_lifecycle_manager',
+                executable='lifecycle_manager',
+                name='lifecycle_manager_map_server',
+                output='screen',
+                arguments=['--ros-args', '--log-level', log_level],
+                parameters=[{'use_sim_time': use_sim_time},
+                            {'autostart': autostart},
+                            {'node_names': ['map_server']}])
         ]
     )
 
     load_composable_nodes = LoadComposableNodes(
         condition=IfCondition(use_composition),
-        target_container=container_name,
+        target_container=container_name_full,
         composable_node_descriptions=[
             ComposableNode(
                 package='nav2_map_server',
@@ -161,12 +180,13 @@ def generate_launch_description():
                 name='lifecycle_manager_localization',
                 parameters=[{'use_sim_time': use_sim_time,
                              'autostart': autostart,
-                             'node_names': lifecycle_nodes}]),
+                             'node_names': ['amcl']}]),
         ],
     )
 
     # Create the launch description and populate
     ld = LaunchDescription()
+
 
     # Set environment variables
     ld.add_action(stdout_linebuf_envvar)
@@ -174,6 +194,7 @@ def generate_launch_description():
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_map_yaml_cmd)
+    ld.add_action(declare_map_server_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_autostart_cmd)

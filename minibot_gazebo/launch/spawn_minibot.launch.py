@@ -14,45 +14,11 @@ from pathlib import Path
 
 def generate_launch_description():
     robot_name = DeclareLaunchArgument("robot_name", default_value="minibot")
-    robot_prefix = DeclareLaunchArgument("robot_prefix", default_value="")
-
+    robot_prefix = DeclareLaunchArgument("robot_prefix", default_value="minibot")
+    
     world_name = DeclareLaunchArgument(
         "world_name", default_value="empty.world")
     
-    environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '0'
-    gz_resource_path = SetEnvironmentVariable(name='GAZEBO_MODEL_PATH', value=[
-        EnvironmentVariable('GAZEBO_MODEL_PATH', default_value=''),
-        '/usr/share/gazebo-11/models/:',
-        str(Path(get_package_share_directory(
-            'minibot_description')).parent.resolve()),
-        ':',
-        str(Path(get_package_share_directory(
-            'minibot_gazebo')).parent.resolve()) + "/minibot_gazebo/models",
-    ])
-
-    gz_server = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            FindPackageShare('gazebo_ros'),
-            '/launch/gzserver.launch.py'
-        ]),
-        launch_arguments={
-            "verbose": "true",
-            "physics": "ode",
-            "lockstep": "true",
-            "world": PathJoinSubstitution([
-                        FindPackageShare('minibot_gazebo'),
-                        'worlds',
-                        LaunchConfiguration('world_name'),
-            ])
-        }.items(),
-    )
-
-    gz_client = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            FindPackageShare('gazebo_ros'),
-            '/launch/gzclient.launch.py'
-        ]),
-    )
 
     upload_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -87,7 +53,7 @@ def generate_launch_description():
             "namespace": LaunchConfiguration('robot_prefix')
         }],
     )
-    
+
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         namespace=LaunchConfiguration('robot_prefix'),
@@ -104,7 +70,7 @@ def generate_launch_description():
                    "--controller-manager", "controller_manager"]
         
     )
-
+    
     return LaunchDescription([
         RegisterEventHandler(
             event_handler=OnProcessExit(
@@ -118,12 +84,10 @@ def generate_launch_description():
                 on_exit=[robot_controller_spawner],
             )
         ),
-        gz_resource_path,
         robot_name,
         robot_prefix,
         world_name,
-        gz_server,
-        gz_client,
         upload_robot,
         spawn_robot,
+    
     ])

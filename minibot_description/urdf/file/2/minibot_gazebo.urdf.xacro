@@ -4,17 +4,11 @@
     <xacro:macro name="insert_gazebo" params="prefix">
         <gazebo>
             <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-                <ros>
-                    <namespace>/${prefix}</namespace>
-                    <remapping>/tf:=tf</remapping>
-                    <remapping>/tf_static:=tf_static</remapping>
-                    <!-- <remapping>/odom:=/base_controller/odom</remapping> -->
-                  </ros>
-                <parameters>$(find minibot_bringup)/config/minibot_controllers_gazebo.yaml</parameters>
+                <parameters>$(find rmf_pinklab_assets)/config/minibot_controllers_gazebo.yaml</parameters>
             </plugin>
         </gazebo>
 
-        <gazebo reference="l_wheel">
+        <gazebo reference="${prefix}l_wheel">
             <mu1>200</mu1>
             <mu2>200</mu2>
             <kp>10000000.0</kp>
@@ -22,7 +16,7 @@
             <!-- <minDepth>0.001</minDepth> -->
         </gazebo>
 
-        <gazebo reference="r_wheel">
+        <gazebo reference="${prefix}r_wheel">
             <mu1>200</mu1>
             <mu2>200</mu2>
             <kp>10000000.0</kp>
@@ -30,13 +24,13 @@
             <!-- <minDepth>0.001</minDepth> -->
         </gazebo>
 
-        <gazebo reference="base_link">
+        <gazebo reference="${prefix}base_link">
             <mu1>0.0</mu1>
             <mu2>0.0</mu2>
             <!-- <minDepth>0.001</minDepth> -->
         </gazebo>
 
-        <gazebo reference="laser_link">
+        <gazebo reference="${prefix}laser_link">
             <sensor name="laser" type="ray">
                 <pose>0 0 0 0 0 0</pose>
                 <always_on>1</always_on>
@@ -64,19 +58,18 @@
                 </ray>
                 <plugin name="laser" filename="libgazebo_ros_ray_sensor.so">
                     <ros>
-                        <namespace>${prefix}</namespace>
                         <remapping>~/out:=scan</remapping>
                     </ros>
-                    <frame_name>laser_link</frame_name>
+                    <frame_name>${prefix}laser_link</frame_name>
                     <output_type>sensor_msgs/LaserScan</output_type>
                 </plugin>
             </sensor>
         </gazebo>
 
-        <!-- <gazebo reference="camera_link">
-            <sensor name="camera" type="camera">
+        <gazebo reference="${prefix}camera_link">
+            <sensor name="${prefix}camera" type="camera">
                 <update_rate>30.0</update_rate>
-                <camera name="camera">
+                <camera name="${prefix}camera">
                     <pose>0 0 0 0 -1.5707 0</pose>
                     <horizontal_fov>1.08</horizontal_fov>
                     <image>
@@ -94,20 +87,16 @@
                         <stddev>0.01</stddev>
                     </noise>
                 </camera>
-                
-                <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <plugin name="${prefix}camera_controller" filename="libgazebo_ros_camera.so">
                     <ros>
-                        <namespace>camera</namespace>
-                        <remapping>camera1/image_raw:=camera/image_test</remapping>
-                        <remapping>camera_info:=camera_info_test</remapping>
+                        <!-- <namespace>${prefix}camera</namespace> -->
+                        <!-- <remapping>camera1/image_raw:=camera/image_test</remapping>
+                        <remapping>camera_info:=camera_info_test</remapping> -->
                     </ros>
                     <frame_name>camera_link</frame_name>
                     <hack_baseline>0.07</hack_baseline>
                 </plugin>
-                
             </sensor>
-        </gazebo> -->
-
-
+        </gazebo>
     </xacro:macro>
 </robot>

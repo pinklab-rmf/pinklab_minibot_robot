@@ -1,7 +1,7 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, GroupAction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
@@ -31,11 +31,25 @@ def generate_launch_description():
         name='slam_toolbox',
         output='screen'
     )
+    
+        # RViz2 설정 파일 경로 설정
+    rviz_config_file = os.path.join(
+        get_package_share_directory('minibot_navigation2'),
+        'rviz',
+        'map_building.rviz'
+    )
 
+    start_rviz_cmd = ExecuteProcess(
+        cmd=['rviz2', '-d', rviz_config_file],
+        output='screen'
+    )
+    
     ld = LaunchDescription()
 
     ld.add_action(declare_use_sim_time_argument)
     ld.add_action(declare_slam_params_file_cmd)
     ld.add_action(slam_toolbox_node)
+    ld.add_action(start_rviz_cmd)  # RViz 실행 액션 추가
+
 
     return ld

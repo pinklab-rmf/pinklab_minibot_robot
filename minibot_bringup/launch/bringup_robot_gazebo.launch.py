@@ -10,8 +10,9 @@ from launch.substitutions import PathJoinSubstitution, Command, LaunchConfigurat
 from launch.conditions import LaunchConfigurationEquals
 
 def generate_launch_description():
-    prefix = DeclareLaunchArgument("prefix", default_value="")
+    namespace = DeclareLaunchArgument("namespace", default_value="")
     world_name = DeclareLaunchArgument("world_name", default_value="empty.world")
+    robot_name = DeclareLaunchArgument("robot_name", default_value="minibot")
 
     gazebo_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -19,13 +20,16 @@ def generate_launch_description():
             '/launch/bringup_gazebo.launch.py']
         ),
         launch_arguments = {
-            'robot_prefix': LaunchConfiguration('prefix'),
+            'robot_name': LaunchConfiguration('robot_name'),
+            'robot_prefix': LaunchConfiguration('namespace'),
             'world_name': LaunchConfiguration('world_name'),
         }.items()
     )
 
     return LaunchDescription([
-        prefix,
+        namespace,
         world_name,
+        robot_name,
         gazebo_bringup
+        
     ])

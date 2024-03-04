@@ -15,7 +15,7 @@
                 </hardware>
             </xacro:unless>
 
-            <joint name="l_wheel_joint">
+            <joint name="${prefix}/l_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1.0</param>
                     <param name="max">1.0</param>
@@ -25,7 +25,7 @@
                 <state_interface name="velocity"/>
             </joint>
 
-            <joint name="r_wheel_joint">
+            <joint name="${prefix}/r_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1.0</param>
                     <param name="max">1.0</param>
